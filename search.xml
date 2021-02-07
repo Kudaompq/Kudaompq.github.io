@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>滑动窗口算法</title>
+      <link href="2021/02/07/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95/"/>
+      <url>2021/02/07/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h1 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h1><blockquote><p>动态的去维护一个窗口的大小，从而减少数组问题或者字符串问题的复杂度</p></blockquote><ul><li>指定窗口大小，求最大最小值</li><li>指定值，求最大最小窗口大小</li></ul><h2 id="算法思想"><a href="#算法思想" class="headerlink" title="算法思想"></a>算法思想</h2><ul><li>考虑窗口的平移</li><li>考虑窗口的扩张与收缩</li></ul><h2 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h2><p>用于求小于指定值的最值大小</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;伪代码</span><br><span class="line">&#x2F;&#x2F;设定一个虚拟窗口，设置左右指针，数组大小len</span><br><span class="line">&#x2F;&#x2F;初始化好的数组</span><br><span class="line">int[] nums;</span><br><span class="line">int left &#x3D; 0, right &#x3D; 0;</span><br><span class="line">int sum &#x3D; 0;</span><br><span class="line">&#x2F;&#x2F;右指针一直往右，窗口大小增大</span><br><span class="line">for (; right &lt; len ; right++)&#123;</span><br><span class="line">sum +&#x3D; nums[right];</span><br><span class="line">while(sum &gt; 设定值)&#123;</span><br><span class="line">&#x2F;&#x2F;减去左指针指向的值同时左指针右移，窗口大小减小</span><br><span class="line">sum -&#x3D; nums[left];</span><br><span class="line">left++;</span><br><span class="line">&#125;</span><br><span class="line">窗口最大值 &#x3D; Math.max(窗口最大值,right - left + 1);</span><br><span class="line">&#125;</span><br><span class="line">return 窗口最大值;</span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><p>选自：<a href="https://leetcode-cn.com/problems/get-equal-substrings-within-budget/">https://leetcode-cn.com/problems/get-equal-substrings-within-budget/</a></p><p><img src="/images/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E7%AE%97%E6%B3%95/image-20210207213730709.png" alt="image-20210207213730709"></p><h3 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h3><ul><li>题意其实是求两连续子串之间的绝对值差小于cost，同时长度最长</li><li>将两个字符串转换为字符数组，再相减转换成绝对值数组</li><li>利用滑动窗口求最大长度</li></ul><h3 id="算法实现："><a href="#算法实现：" class="headerlink" title="算法实现："></a>算法实现：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">class Solution &#123;</span><br><span class="line">    public int equalSubstring(String s, String t, int maxCost) &#123;</span><br><span class="line">        &#x2F;&#x2F; 1.转换成差值数组</span><br><span class="line">        char[] ch_s &#x3D; s.toCharArray();</span><br><span class="line">        char[] ch_t &#x3D; t.toCharArray();</span><br><span class="line">        int len &#x3D; s.length();</span><br><span class="line">        int[] nums &#x3D; new int[len];</span><br><span class="line">        for (int i &#x3D; 0 ; i &lt; len ; i++)&#123;</span><br><span class="line">            nums[i] &#x3D; Math.abs(ch_s[i] - ch_t[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 2.利用滑动窗口获取小于maxCost的最长数组</span><br><span class="line">        int left &#x3D; 0 , right &#x3D; 0;</span><br><span class="line">        int max_len &#x3D; -1;</span><br><span class="line">        int current &#x3D; 0;</span><br><span class="line">        &#x2F;&#x2F;右指针自动向右</span><br><span class="line">        for (;right &lt; len ;right++)&#123;</span><br><span class="line">        &#x2F;&#x2F;添加右指针指向的值</span><br><span class="line">            current +&#x3D; nums[right];   </span><br><span class="line">            &#x2F;&#x2F;当当前窗口的值大于指定值时，左指针指向内容离开数组，同时左指针向右移动</span><br><span class="line">            while(current &gt; maxCost)&#123;</span><br><span class="line">                current -&#x3D; nums[left];</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;比较当前窗口是否为最大</span><br><span class="line">            max_len &#x3D; Math.max(max_len,right - left + 1);</span><br><span class="line">        &#125;</span><br><span class="line">        return max_len;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 滑动窗口 </tag>
+            
+            <tag> Sliding Window </tag>
+            
+            <tag> 算法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>会话技术</title>
       <link href="2021/02/01/%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF/"/>
       <url>2021/02/01/%E4%BC%9A%E8%AF%9D%E6%8A%80%E6%9C%AF/</url>
